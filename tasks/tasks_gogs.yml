@@ -78,6 +78,8 @@
     tags:
       - gogs
 
+  - debug: var="gogs_app_ini"
+
   - name: GOGS | configure app.ini
     template: src='{{role_dir}}/templates/app.ini.j2' dest='{{ gogs_home }}/gogs/custom/conf/app.ini' owner='{{ gogs_user }}' group='{{ gogs_user }}' mode=0644
     when: gogs_app_ini is defined
@@ -87,6 +89,7 @@
 
   - name: GOGS | start and enable service
     service: name=gogs state=started enabled=yes
+    when: docker_test is not defined
     become: yes
     tags:
       - gogs
