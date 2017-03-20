@@ -78,7 +78,7 @@
       - gogs
 
   - name: GOGS | configure app.ini
-    template: src='{{role_dir}}/app.ini.j2' dest='{{ gogs_home }}/gogs/custom/conf/app.ini' owner='{{ gogs_user }}' group='{{ gogs_user }}' mode=0644
+    template: src='{{role_dir}}/templates/app.ini.j2' dest='{{ gogs_home }}/gogs/custom/conf/app.ini' owner='{{ gogs_user }}' group='{{ gogs_user }}' mode=0644
     become: yes
     tags:
       - gogs
