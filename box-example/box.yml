@@ -5,6 +5,17 @@
   vars:
     - root_dir: "{{playbook_dir}}"
     - env: prod
+    - custom_demo_domain: "gogs"
+    - gogs_mysql_databases:
+        - name: gogs
+          encoding: utf8
+          collation: utf8_unicode_ci
+    - gogs_mysql_users:
+        - name: gogs
+          host: "localhost"
+          password: gogs
+          priv: "gogs.*:ALL"
+
     - gogs_custom_app_ini:
         main:
           APP_NAME: 'Gogs: Go Git Service'
@@ -72,15 +83,8 @@
         option_harden_mysql: true,
         mysql_root_user: root,
         mysql_root_password: devroot,
-      - mysql_databases:
-        - name: gogs
-          encoding: utf8
-          collation: utf8_general_ci
-      - mysql_users:
-        - name: gogs
-          host: "localhost"
-          password: gogs
-          priv: "gogs.*:ALL"
+        mysql_databases: "{{gogs_mysql_databases}}",
+        mysql_users: "{{gogs_mysql_users}}"
        }
      - {
          role: "sa-gogs",
