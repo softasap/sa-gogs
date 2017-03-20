@@ -1,6 +1,9 @@
 ---
 # defaults file for sa-gogs
 
+
+role_dir: "{{role_path}}"
+
 gogs_version: "0.10.18"
 
 option_gogs_db: False # mysql, postgres
