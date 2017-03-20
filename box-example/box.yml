@@ -47,8 +47,8 @@
           SSL_MODE: 'disable'
 #          PATH: 'data/gogs.db'
         security:  # comment to activate wizard
-          INSTALL_LOCK = true
-          SECRET_KEY   = LwZQ0q4f1DYQKlZ
+          INSTALL_LOCK: true
+          SECRET_KEY: LwZQ0q4f1DYQKlZ
 
 
   pre_tasks:

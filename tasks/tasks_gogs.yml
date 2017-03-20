@@ -58,7 +58,7 @@
       - gogs
 
   - name: GOGS |  Template systemd
-    copy: src="{{ gogs_home }}/gogs/scripts/systemd/systemd" dest="/etc/systemd/system/gogs.service" remote_src=True owner="root" group="root"
+    copy: src="{{ gogs_home }}/gogs/scripts/systemd/gogs.service" dest="/etc/systemd/system/gogs.service" remote_src=True owner="root" group="root"
     when: gogs_present | failed and upstart_system == "systemd"
     become: yes
     tags:
@@ -78,7 +78,7 @@
     tags:
       - gogs
 
-  - debug: var="gogs_app_ini"
+#  - debug: var="gogs_app_ini"
 
   - name: GOGS | configure app.ini
     template: src='{{role_dir}}/templates/app.ini.j2' dest='{{ gogs_home }}/gogs/custom/conf/app.ini' owner='{{ gogs_user }}' group='{{ gogs_user }}' mode=0644
@@ -93,3 +93,6 @@
     become: yes
     tags:
       - gogs
+
+
+  - debug: msg="IMPORTANT - for initial install first registered user will be root"
