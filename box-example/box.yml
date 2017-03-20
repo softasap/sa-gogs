@@ -5,7 +5,7 @@
   vars:
     - root_dir: "{{playbook_dir}}"
     - env: prod
-    - custom_demo_domain: "gogs"
+    - custom_demo_domain: "{{ansible_host}}"
     - gogs_mysql_databases:
         - name: gogs
           encoding: utf8
@@ -26,7 +26,7 @@
           SCRIPT_TYPE: 'bash'
         server:
           PROTOCOL: 'http'
-          DOMAIN: 'localhost'
+          DOMAIN: '{{custom_demo_domain}}'
           ROOT_URL: '%(PROTOCOL)s://%(DOMAIN)s:%(HTTP_PORT)s/'
           HTTP_ADDR: ''
           HTTP_PORT: '3000'
@@ -46,6 +46,9 @@
           PASSWD: 'gogs'
           SSL_MODE: 'disable'
 #          PATH: 'data/gogs.db'
+        security:  # comment to activate wizard
+          INSTALL_LOCK = true
+          SECRET_KEY   = LwZQ0q4f1DYQKlZ
 
 
   pre_tasks:
@@ -71,6 +74,9 @@
 
 
   roles:
+     - {
+         role: "sa-git"
+       }
      - {
          role: "sa-nginx"
        }

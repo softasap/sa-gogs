@@ -1,3 +1,6 @@
+[submodule "roles/sa-git"]
+        path = roles/sa-git
+        url = https://github.com/softasap/sa-git.git
 [submodule "roles/sa-gogs"]
         path = roles/sa-gogs
         url = https://github.com/softasap/sa-gogs.git
