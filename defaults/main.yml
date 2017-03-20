@@ -3,7 +3,7 @@
 
 gogs_version: "0.10.18"
 
-gogs_db: False # mysql, postgres
+option_gogs_db: False # mysql, postgres
 gogs_db_name: gogs
 gogs_db_username: gogs
 gogs_db_password: gogs #! override

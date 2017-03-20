@@ -23,14 +23,14 @@
       - gogs
 
   - name: GOGS | Download distribution
-    get_url: url="{{ gogs_binary_url }}" dest="{{ gogs_home }}/gogs.zip"
+    get_url: url="https://github.com/gogits/gogs/releases/download/v{{gogs_version | default('0.10.18')}}/linux_amd64.zip" dest="{{ gogs_home }}/gogs.zip"
     when: gogs_present | failed
     become: yes
     tags:
       - gogs
 
   - name: GOGS | Unpack distribution
-    unarchive: src="{{ gogs_home }}/gogs.zip" dest="{{ gogs_user_home }}" owner="{{ gogs_user }}" copy=no
+    unarchive: src="{{ gogs_home }}/gogs.zip" dest="{{ gogs_home }}" owner="{{ gogs_user }}" copy=no
     when: gogs_present | failed
     become: yes
     tags:
