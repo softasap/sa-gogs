@@ -1,0 +1,13 @@
+---
+# defaults file for sa-gogs
+
+gogs_version: "0.10.18"
+
+gogs_db: False # mysql, postgres
+gogs_db_name: gogs
+gogs_db_username: gogs
+gogs_db_password: gogs #! override
+
+gogs_user: git
+gogs_home: "/home/{{gogs_user}}" # if overwritten - patch setup startup on your own
+gogs_log_dir: "{{ gogs_home }}/gogs/log"

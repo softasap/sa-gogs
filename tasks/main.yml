@@ -1,0 +1,5 @@
+---
+# tasks file for sa-gogs
+  - include: __detect_init_system.yml
+
+  - include: tasks_gogs.yml

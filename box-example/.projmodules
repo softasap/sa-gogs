@@ -1,0 +1,4 @@
+[submodule "roles/sa-gogs"]
+        path = roles/sa-gogs
+        url = https://github.com/softasap/sa-gogs.git
+

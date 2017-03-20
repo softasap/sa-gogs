@@ -1,0 +1,79 @@
+---
+  - name: GOGS | Check if is present
+    command: test -x /usr/local/bin/gogs
+    ignore_errors: yes
+    register: gogs_present
+    tags:
+      - gogs
+
+  - name: GOGS | Install dependencies
+    apt: pkg="{{item}}" state="present"
+    with_items:
+      - "unzip"
+    when: gogs_present | failed
+    become: yes
+    tags:
+      - gogs
+
+  - name: GOGS | Add gogs user
+    user: name="{{gogs_user}}" shell="/bin/false" home="{{gogs_home}}"
+    when: gogs_present | failed
+    become: yes
+    tags:
+      - gogs
+
+  - name: GOGS | Download distribution
+    get_url: url="{{ gogs_binary_url }}" dest="{{ gogs_home }}/gogs.zip"
+    when: gogs_present | failed
+    become: yes
+    tags:
+      - gogs
+
+  - name: GOGS | Unpack distribution
+    unarchive: src="{{ gogs_home }}/gogs.zip" dest="{{ gogs_user_home }}" owner="{{ gogs_user }}" copy=no
+    when: gogs_present | failed
+    become: yes
+    tags:
+      - gogs
+
+  - name: GOGS | Make gogs binary executable
+    file:  path="{{ gogs_home }}//gogs/gogs" mode=0755
+    when: gogs_present | failed
+    become: yes
+    tags:
+      - gogs
+
+  - name: GOGS |  Symlink gogs binary
+    file: src="{{ gogs_home }}/gogs/gogs" dest="/usr/local/bin/gogs" state=link
+    when: gogs_present | failed
+    become: yes
+    tags:
+      - gogs
+
+  - name: GOGS |  Template upstart
+    copy: src="{{ gogs_home }}/gogs/scripts/init/{{ansible_os_family | lower}}/gogs" dest="/etc/init.d/gogs" remote_src=True mode=0755
+    when: gogs_present | failed and upstart_system == "upstart"
+    become: yes
+    tags:
+      - gogs
+
+  - name: GOGS |  Template systemd
+    copy: src="{{ gogs_home }}/gogs/scripts/systemd/systemd" dest="/etc/systemd/system/gogs.service" remote_src=True owner="root" group="root"
+    when: gogs_present | failed and upstart_system == "systemd"
+    become: yes
+    tags:
+      - gogs
+
+  - name: GOGS | Configure logs
+    file: path="{{gogs_log_dir}}" state=directory owner="{{ gogs_user }}"  group="{{ gogs_user }}" mode=0755
+    when: gogs_present | failed
+    become: yes
+    tags:
+      - gogs
+
+  - name: GOGS | start and enable service
+    service: name=gogs state=started enabled=yes
+    when: gogs_present | failed and (docker_test is not defined)
+    become: yes
+    tags:
+      - gogs
