@@ -71,9 +71,20 @@
     tags:
       - gogs
 
+  - name: GOGS | Configure config folder
+    file: state=directory path='{{ gogs_home }}/gogs/custom/conf' owner='{{ gogs_user }}' group='{{ gogs_user }}'  mode=0755
+    become: yes
+    tags:
+      - gogs
+
+  - name: GOGS | configure app.ini
+    template: src='{{role_dir}}/app.ini.j2' dest='{{ gogs_home }}/gogs/custom/conf/app.ini' owner='{{ gogs_user }}' group='{{ gogs_user }}' mode=0644
+    become: yes
+    tags:
+      - gogs
+
   - name: GOGS | start and enable service
     service: name=gogs state=started enabled=yes
-    when: gogs_present | failed and (docker_test is not defined)
     become: yes
     tags:
       - gogs

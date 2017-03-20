@@ -4,7 +4,38 @@
 
   vars:
     - root_dir: "{{playbook_dir}}"
-    - env: development
+    - env: prod
+    - gogs_custom_app_ini:
+        main:
+          APP_NAME: 'Gogs: Go Git Service'
+          RUN_USER: 'git'
+          RUN_MODE: '{{env}}'
+        repository:
+          ROOT: ''
+          SCRIPT_TYPE: 'bash'
+        server:
+          PROTOCOL: 'http'
+          DOMAIN: 'localhost'
+          ROOT_URL: '%(PROTOCOL)s://%(DOMAIN)s:%(HTTP_PORT)s/'
+          HTTP_ADDR: ''
+          HTTP_PORT: '3000'
+          SSH_PORT: '22'
+          OFFLINE_MODE: false
+          DISABLE_ROUTER_LOG: false
+#          CERT_FILE: 'custom/https/cert.pem'
+#          KEY_FILE: 'custom/https/key.pem'
+          STATIC_ROOT_PATH: ''
+          ENABLE_GZIP: false
+          LANDING_PAGE: 'home'
+        database:
+          DB_TYPE: mysql
+          HOST: 127.0.0.1:3306
+          NAME: gogs
+          USER: gogs
+          PASSWD: 'gogs'
+          SSL_MODE: 'disable'
+#          PATH: 'data/gogs.db'
+
 
   pre_tasks:
     - debug: msg="Pre tasks section"
@@ -30,6 +61,28 @@
 
   roles:
      - {
-         role: "sa-gogs"
+         role: "sa-nginx"
        }
-
+     - {
+         role: "sa-include",
+         include_file: "{{root_dir}}/demosite.yml"
+       }
+     - {
+        role: "sa-mysql",
+        option_harden_mysql: true,
+        mysql_root_user: root,
+        mysql_root_password: devroot,
+      - mysql_databases:
+        - name: gogs
+          encoding: utf8
+          collation: utf8_general_ci
+      - mysql_users:
+        - name: gogs
+          host: "localhost"
+          password: gogs
+          priv: "gogs.*:ALL"
+       }
+     - {
+         role: "sa-gogs",
+         gogs_app_ini: "{{gogs_custom_app_ini}}"
+       }
