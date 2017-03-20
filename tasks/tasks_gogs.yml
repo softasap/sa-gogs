@@ -73,12 +73,14 @@
 
   - name: GOGS | Configure config folder
     file: state=directory path='{{ gogs_home }}/gogs/custom/conf' owner='{{ gogs_user }}' group='{{ gogs_user }}'  mode=0755
+    when: gogs_app_ini is defined
     become: yes
     tags:
       - gogs
 
   - name: GOGS | configure app.ini
     template: src='{{role_dir}}/templates/app.ini.j2' dest='{{ gogs_home }}/gogs/custom/conf/app.ini' owner='{{ gogs_user }}' group='{{ gogs_user }}' mode=0644
+    when: gogs_app_ini is defined
     become: yes
     tags:
       - gogs

@@ -1,4 +1,4 @@
-{% for section, options in gogs_config.iteritems() %}
+{% for section, options in gogs_app_ini.iteritems() %}
 [{{ section }}]
 
 {% for key, value in options.iteritems() %}
