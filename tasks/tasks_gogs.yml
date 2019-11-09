@@ -2,71 +2,73 @@
   - name: GOGS | Check if is present
     command: test -x /usr/local/bin/gogs
     ignore_errors: yes
+    changed_when: False
     register: gogs_present
     tags:
       - gogs
 
   - name: GOGS | Install dependencies
-    apt: pkg="{{item}}" state="present"
-    with_items:
-      - "unzip"
-    when: gogs_present | failed
+    apt:
+      pkg:
+       - unzip
+      state: present
+    when: gogs_present is failed
     become: yes
     tags:
       - gogs
 
   - name: GOGS | Add gogs user
-    user: name="{{gogs_user}}" shell="/bin/false" home="{{gogs_home}}"
-    when: gogs_present | failed
+    user: name="{{ gogs_user }}" shell="/bin/false" home="{{ gogs_home }}"
+    when: gogs_present is failed
     become: yes
     tags:
       - gogs
 
   - name: GOGS | Download distribution
-    get_url: url="https://github.com/gogits/gogs/releases/download/v{{gogs_version | default('0.10.18')}}/linux_amd64.zip" dest="{{ gogs_home }}/gogs.zip"
-    when: gogs_present | failed
+    get_url: url="https://github.com/gogits/gogs/releases/download/v{{ gogs_version | default('0.10.18') }}/linux_amd64.zip" dest="{{ gogs_home }}/gogs.zip"
+    when: gogs_present is failed
     become: yes
     tags:
       - gogs
 
   - name: GOGS | Unpack distribution
     unarchive: src="{{ gogs_home }}/gogs.zip" dest="{{ gogs_home }}" owner="{{ gogs_user }}" copy=no
-    when: gogs_present | failed
+    when: gogs_present is failed
     become: yes
     tags:
       - gogs
 
   - name: GOGS | Make gogs binary executable
     file:  path="{{ gogs_home }}//gogs/gogs" mode=0755
-    when: gogs_present | failed
+    when: gogs_present is failed
     become: yes
     tags:
       - gogs
 
   - name: GOGS |  Symlink gogs binary
     file: src="{{ gogs_home }}/gogs/gogs" dest="/usr/local/bin/gogs" state=link
-    when: gogs_present | failed
+    when: gogs_present is failed
     become: yes
     tags:
       - gogs
 
   - name: GOGS |  Template upstart
-    copy: src="{{ gogs_home }}/gogs/scripts/init/{{ansible_os_family | lower}}/gogs" dest="/etc/init.d/gogs" remote_src=True mode=0755
-    when: gogs_present | failed and upstart_system == "upstart"
+    copy: src="{{ gogs_home }}/gogs/scripts/init/{{ ansible_os_family | lower }}/gogs" dest="/etc/init.d/gogs" remote_src=True mode=0755
+    when: gogs_present is failed and upstart_system == "upstart"
     become: yes
     tags:
       - gogs
 
   - name: GOGS |  Template systemd
     copy: src="{{ gogs_home }}/gogs/scripts/systemd/gogs.service" dest="/etc/systemd/system/gogs.service" remote_src=True owner="root" group="root"
-    when: gogs_present | failed and upstart_system == "systemd"
+    when: gogs_present is failed and upstart_system == "systemd"
     become: yes
     tags:
       - gogs
 
   - name: GOGS | Configure logs
-    file: path="{{gogs_log_dir}}" state=directory owner="{{ gogs_user }}"  group="{{ gogs_user }}" mode=0755
-    when: gogs_present | failed
+    file: path="{{ gogs_log_dir }}" state=directory owner="{{ gogs_user }}"  group="{{ gogs_user }}" mode=0755
+    when: gogs_present is failed
     become: yes
     tags:
       - gogs
@@ -81,7 +83,7 @@
 #  - debug: var="gogs_app_ini"
 
   - name: GOGS | configure app.ini
-    template: src='{{role_dir}}/templates/app.ini.j2' dest='{{ gogs_home }}/gogs/custom/conf/app.ini' owner='{{ gogs_user }}' group='{{ gogs_user }}' mode=0644
+    template: src='{{ role_dir }}/templates/app.ini.j2' dest='{{ gogs_home }}/gogs/custom/conf/app.ini' owner='{{ gogs_user }}' group='{{ gogs_user }}' mode=0644
     when: gogs_app_ini is defined
     become: yes
     tags:
